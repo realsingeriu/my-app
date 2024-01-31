@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 export default function App() {
   return (
-    <View style={{ flex: 1, backgroundColor: "tomato" }}>
+    <View style={styles.container}>
       <View style={styles.city}>
         <Text style={styles.cityName}>Seoul</Text>
       </View>
@@ -16,7 +16,10 @@ export default function App() {
   );
 }
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+    backgroundColor: "tomato",
+  },
   city: {
     flex: 1.2,
     justifyContent: "center",
