@@ -6,12 +6,31 @@ import { useEffect, useState } from "react";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function App() {
+  const [city, setCity] = useState("Loading...");
+  const [region, setRegion] = useState("");
   const [location, setLocation] = useState();
   const [ok, setOk] = useState(true);
   const ask = async () => {
     const { granted } = await Location.requestForegroundPermissionsAsync();
     if (!granted) {
       setOk(false);
+      return;
+    }
+
+    try {
+      const {
+        coords: { latitude, longitude },
+      } = await Location.getCurrentPositionAsync({ accuracy: 5 });
+
+      const location = await Location.reverseGeocodeAsync(
+        { latitude, longitude },
+        { useGoogleMaps: false }
+      );
+
+      setCity(location[0]?.city || location[0]?.district || "Unknown");
+      setRegion(location[0]?.region || "");
+    } catch (error) {
+      console.error("Error getting location:", error);
     }
   };
   useEffect(() => {
@@ -21,7 +40,8 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.city}>
-        <Text style={styles.cityName}>Seoul</Text>
+        <Text style={styles.regionName}>{region}</Text>
+        {region && <Text style={styles.cityName}>{city}</Text>}
       </View>
       {/* 스크롤뷰를 가로로 해서 수평으로 스크롤하고 스크롤바를 삭제함. */}
       <ScrollView
@@ -60,6 +80,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cityName: {
+    fontSize: 38,
+    fontWeight: "400",
+  },
+  regionName: {
     fontSize: 58,
     fontWeight: "500",
   },
